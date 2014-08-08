@@ -19,9 +19,9 @@
     
     <script type="text/javascript">
         // Experiment parameters
-        var n_trials_per_stimulus = 5;
+        var n_trials_per_stimulus = 1;
         
-        // Experiment Instructions
+        // Experiment Instructions 
         var welcome_message = '<div id="instructions"><p>Welcome to the experiment. Press enter to begin.</p></div>';
         
         var instructions = '<div id="instructions"><p></p><p>\
@@ -34,11 +34,20 @@
         // Generating Random Order for Stimuli
 		
 		var stimuli = [
-			{image: "img/congruent_left.gif", data: { stimulus_type: "congruent" }}, 
+		<!--    {image: "img/congruent_left.gif", data: { stimulus_type: "congruent" }}, 
 			{image: "img/congruent_right.gif", data: { stimulus_type: "congruent" }},
 			{image: "img/incongruent_left.gif", data: { stimulus_type: "incongruent" }},
-			{image: "img/incongruent_right.gif", data: { stimulus_type: "incongruent" }},
+			{image: "img/incongruent_right.gif", data: { stimulus_type: "incongruent" }}, -->
+			{image: "img/ChrBrad_0.0_4.5_4.5.png", data: { stimulus_type: "0.0_4.5_4.5"}},
+			{image: "img/ChrBrad_1.3_1.3_4.5.png", data: { stimulus_type: "1.3_1.3_4.5"}},
+			{image: "img/ChrBrad_1.3_7.6_4.5.png", data: { stimulus_type: "1.3_7.6_4.5"}},
+			{image: "img/ChrBrad_4.4_0.0_4.5.png", data: { stimulus_type: "4.4_0.0_4.5"}},
+			{image: "img/ChrBrad_4.5_9.0_4.5.png", data: { stimulus_type: "4.5_9.0_4.5"}},
+			{image: "img/ChrBrad_7.6_1.3_4.5.png", data: { stimulus_type: "7.6_1.3_4.5"}},
+			{image: "img/ChrBrad_7.6_7.6_4.5.png", data: { stimulus_type: "7.6_7.6_4.5"}},
+			{image: "img/ChrBrad_9.0_4.5_4.5.png", data: { stimulus_type: "9.0_4.5_4.5"}},
 		];
+
         
 		var trial_info = jsPsych.randomization.repeat(stimuli, n_trials_per_stimulus, true);
         
