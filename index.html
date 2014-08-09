@@ -8,9 +8,14 @@
         <!-- Load the jspsych library and plugins -->
         <script src="scripts/jspsych.js"></script>
         <script src="scripts/plugins/jspsych-text.js"></script>
-        <script src="scripts/plugins/jspsych-single-stim.js"></script>
         <!-- Load the stylesheet -->
         <link href="css/jspsych.css" type="text/css" rel="stylesheet"></link>
+        <!-- likert plugin requires the jQuery UI library and stylesheet -->
+        <!-- these can be loaded from google's servers with the following links -->
+        <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+        <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/black-tie/jquery-ui.min.css" rel="stylesheet" type="text/css"></link>
+        <!-- jsPsych -->
+        <script src="scripts/plugins/jspsych-SAM_pictures.js"></script>
     </head>
     
     <body>
@@ -33,27 +38,19 @@
 
         // Generating Random Order for Stimuli
 		
-//		var stimuli = [
-//			{image: "img/congruent_left.gif", data: { stimulus_type: "congruent" }}, 
-//			{image: "img/congruent_right.gif", data: { stimulus_type: "congruent" }},
-//			{image: "img/incongruent_left.gif", data: { stimulus_type: "incongruent" }},
-//			{image: "img/incongruent_right.gif", data: { stimulus_type: "incongruent" }},
-//		]; 
-
-
-		var stimuli = [
-			{image: "img/ChrBrad_0.0_4.5_4.5.png", data: { stimulus_type: "0.0_4.5_4.5"}},
-			{image: "img/ChrBrad_1.3_1.3_4.5.png", data: { stimulus_type: "1.3_1.3_4.5"}},
-			{image: "img/ChrBrad_1.3_7.6_4.5.png", data: { stimulus_type: "1.3_7.6_4.5"}},
-			{image: "img/ChrBrad_4.4_0.0_4.5.png", data: { stimulus_type: "4.4_0.0_4.5"}},
-			{image: "img/ChrBrad_4.5_9.0_4.5.png", data: { stimulus_type: "4.5_9.0_4.5"}},
-			{image: "img/ChrBrad_7.6_1.3_4.5.png", data: { stimulus_type: "7.6_1.3_4.5"}},
-			{image: "img/ChrBrad_7.6_7.6_4.5.png", data: { stimulus_type: "7.6_7.6_4.5"}},
-			{image: "img/ChrBrad_9.0_4.5_4.5.png", data: { stimulus_type: "9.0_4.5_4.5"}},
-		];
+	var stimuli = [
+		{image: "img/ChrBrad_0.0_4.5_4.5.png", data: { stimulus_type: "0.0_4.5_4.5"}},
+		{image: "img/ChrBrad_1.3_1.3_4.5.png", data: { stimulus_type: "1.3_1.3_4.5"}},
+		{image: "img/ChrBrad_1.3_7.6_4.5.png", data: { stimulus_type: "1.3_7.6_4.5"}},
+		{image: "img/ChrBrad_4.4_0.0_4.5.png", data: { stimulus_type: "4.4_0.0_4.5"}},
+		{image: "img/ChrBrad_4.5_9.0_4.5.png", data: { stimulus_type: "4.5_9.0_4.5"}},
+		{image: "img/ChrBrad_7.6_1.3_4.5.png", data: { stimulus_type: "7.6_1.3_4.5"}},
+		{image: "img/ChrBrad_7.6_7.6_4.5.png", data: { stimulus_type: "7.6_7.6_4.5"}},
+		{image: "img/ChrBrad_9.0_4.5_4.5.png", data: { stimulus_type: "9.0_4.5_4.5"}},
+	];
 
         
-		var trial_info = jsPsych.randomization.repeat(stimuli, n_trials_per_stimulus, true);
+	var trial_info = jsPsych.randomization.repeat(stimuli, n_trials_per_stimulus, true);
         
         // Define experiment blocks
         var instruction_block = {
@@ -62,31 +59,32 @@
                 timing_post_trial: 1500
             };
         
-        var test_block = {
-                type: "single-stim",
-                stimuli: trial_info.image,
-                choices: [37, 39],
-                data: trial_info.data,
-				timing_post_trial: function() {
-					return Math.floor(Math.random()*1000)+1000;
-				}
-            };
+
+        var likert_block = {
+	    type: "SAM_pictures",
+            stimuli: trial_info.image,
+        };
+
             
         var debrief_block = {
                 type: "text",
                 text: [debrief]
             };
             
-		jsPsych.preloadImages(trial_info.image, function() { start_experiment(); });
-		
-		function start_experiment() {
-			jsPsych.init({
-				display_element: $('#jspsych_target'),
-				experiment_structure: [instruction_block, test_block, debrief_block],
-				on_finish: function(data) {
-					jsPsych.dataAPI.displayData();
-				}
-			});
-		}
+	jsPsych.preloadImages(trial_info.image, function() { start_experiment(); });
+	
+	function start_experiment() {
+		jsPsych.init({
+			display_element: $('#jspsych_target'),
+//			experiment_structure: [instruction_block, likert_block, debrief_block],
+			experiment_structure: [likert_block],
+			on_finish: function(data) {
+				jsPsych.dataAPI.displayData();
+			}
+		});
+
+
+
+	}
     </script>
 </html>

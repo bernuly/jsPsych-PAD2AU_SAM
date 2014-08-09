@@ -20,13 +20,9 @@
             var trials = new Array(params.stimuli.length);
             for (var i = 0; i < trials.length; i++) {
                 trials[i] = {};
-                trials[i].type =  "SAM_pictures",
-                trials[i].questions =  params.questions[i],
+                trials[i].type =  "SAM_pictures";
                 trials[i].a_path = params.stimuli[i];
-                trials[i].labels =  params.labels[i],
-                trials[i].intervals =  params.intervals[i],
-                trials[i].show_ticks =  (typeof params.show_ticks === 'undefined') ? true : params.show_ticks,
-                trials[i].data =  (typeof params.data === 'undefined') ? {} : params.data[i]
+                trials[i].data = (typeof params.data === 'undefined') ? {} : params.data[i];
             }
             return trials;
         };
@@ -39,20 +35,29 @@
             trial = jsPsych.pluginAPI.normalizeTrialVariables(trial);
 
 
+            trial.questions = ["Valence", "Arousal"];
+            var scale_val = ["sad", " ", " ", " ", " ", " ", "happy"];
+            var scale_aro = ["low", " ", " ", " ", " ", " ", "high"];
+            trial.labels = [scale_val, scale_aro];
+            trial.intervals = [7,7];
+
+
+
             if (!trial.is_html) {
                 display_element.append($('<img>', {
                     src: trial.a_path,
-                    id: 'jspsych-single-stim-stimulus'
+                    id: 'jspsych-SAM-pictures-stimulus'
                 }));
             }
             else {
                 display_element.append($('<div>', {
                     html: trial.a_path,
-                    id: 'jspsych-single-stim-stimulus'
+                    id: 'jspsych-SAM-pictures-stimulus'
                 }));
             }
 	    
 
+	    
 
             // add likert scale questions
             for (var i = 0; i < trial.questions.length; i++) {
@@ -78,29 +83,29 @@
                 });
 
                 // show tick marks
-                if (trial.show_ticks) {
-                    $("#jspsych-SAM_pictures-" + i).append($('<div>', {
-                        "id": 'jspsych-SAM_pictures-sliderticks' + i,
-                        "class": 'jspsych-SAM_pictures-sliderticks jspsych-SAM_pictures',
-                        "css": {
-                            "position": 'relative'
-                        }
-                    }));
-                    for (var j = 1; j < trial.intervals[i] - 1; j++) {
-                        $('#jspsych-SAM_pictures-slider-' + i).append('<div class="jspsych-SAM_pictures-slidertickmark"></div>');
+		
+                $("#jspsych-SAM_pictures-" + i).append($('<div>', {
+                    "id": 'jspsych-SAM_pictures-sliderticks' + i,
+                    "class": 'jspsych-SAM_pictures-sliderticks jspsych-SAM_pictures',
+                    "css": {
+                        "position": 'relative'
                     }
-
-                    $('#jspsych-SAM_pictures-slider-' + i + ' .jspsych-SAM_pictures-slidertickmark').each(function(index) {
-                        var left = (index + 1) * (100 / (trial.intervals[i] - 1));
-                        $(this).css({
-                            'position': 'absolute',
-                            'left': left + '%',
-                            'width': '1px',
-                            'height': '100%',
-                            'background-color': '#222222'
-                        });
-                    });
+                }));
+                for (var j = 1; j < trial.intervals[i] - 1; j++) {
+                    $('#jspsych-SAM_pictures-slider-' + i).append('<div class="jspsych-SAM_pictures-slidertickmark"></div>');
                 }
+		
+                $('#jspsych-SAM_pictures-slider-' + i + ' .jspsych-SAM_pictures-slidertickmark').each(function(index) {
+                    var left = (index + 1) * (100 / (trial.intervals[i] - 1));
+                    $(this).css({
+                        'position': 'absolute',
+                        'left': left + '%',
+                        'width': '1px',
+                        'height': '100%',
+                        'background-color': '#222222'
+                    });
+                });
+		
 
                 // create labels for slider
                 $("#jspsych-SAM_pictures-" + i).append($('<ul>', {
@@ -138,6 +143,8 @@
                 });
             }
 
+	    
+
             // add submit button
             display_element.append($('<button>', {
                 'id': 'jspsych-SAM_pictures-next',
@@ -163,6 +170,7 @@
                 block.writeData($.extend({}, {
                     "trial_type": "SAM_pictures",
                     "trial_index": block.trial_idx,
+		    "sdf": trial.data.stimulus_type,
                     "rt": response_time
                 }, question_data, trial.data));
 
