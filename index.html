@@ -73,14 +73,21 @@
             
 	jsPsych.preloadImages(trial_info.image, function() { start_experiment(); });
 	
+	function saveData(filename, filedata){
+	   $.ajax({
+	      type:'post',
+	      cache: false,
+	      url: 'scripts/save_data.php', // this is the path to the above PHP script
+	      data: {filename: filename, filedata: filedata}
+	   });
+	}
 	function start_experiment() {
 		jsPsych.init({
 			display_element: $('#jspsych_target'),
 //			experiment_structure: [instruction_block, likert_block, debrief_block],
 			experiment_structure: [likert_block],
-			on_finish: function(data) {
-				jsPsych.dataAPI.displayData();
-			}
+//			on_finish: function(data) { jsPsych.dataAPI.displayData(); }
+		        on_finish: function(data){ saveData("filename.csv", jsPsych.dataAsCSV()) }
 		});
 
 
