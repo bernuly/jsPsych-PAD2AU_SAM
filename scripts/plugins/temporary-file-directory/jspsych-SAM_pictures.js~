@@ -20,9 +20,13 @@
             var trials = new Array(params.stimuli.length);
             for (var i = 0; i < trials.length; i++) {
                 trials[i] = {};
-                trials[i].type =  "SAM_pictures";
+                trials[i].type =  "SAM_pictures",
+                trials[i].questions =  params.questions[i],
                 trials[i].a_path = params.stimuli[i];
-                trials[i].data = (typeof params.data === 'undefined') ? {} : params.data[i];
+                trials[i].labels =  params.labels[i],
+                trials[i].intervals =  params.intervals[i],
+                trials[i].show_ticks =  (typeof params.show_ticks === 'undefined') ? true : params.show_ticks,
+                trials[i].data =  (typeof params.data === 'undefined') ? {} : params.data[i]
             }
             return trials;
         };
@@ -34,31 +38,6 @@
             // it with the output of the function
             trial = jsPsych.pluginAPI.normalizeTrialVariables(trial);
 
-
-            trial.questions = ["Valence", "Arousal"];
-            var scale_val = ["negative", " ", " ", "neutral", " ", " ", "positive"];
-            var scale_aro = ["quiet", " ", " ", "neutral", " ", " ", "active"];
-            trial.labels = [scale_val, scale_aro];
-            trial.intervals = [7,7];
-
-
-
-            if (!trial.is_html) {
-                display_element.append($('<img>', {
-                    src: trial.a_path,
-                    id: 'jspsych-SAM-pictures-stimulus'
-                }));
-            }
-            else {
-                display_element.append($('<div>', {
-                    html: trial.a_path,
-                    id: 'jspsych-SAM-pictures-stimulus'
-                }));
-            }
-	    
-
-	    
-
             // add likert scale questions
             for (var i = 0; i < trial.questions.length; i++) {
                 // create div
@@ -68,7 +47,7 @@
                 }));
 
                 // add question text
-                $("#jspsych-SAM_pictures-" + i).append('<p class="jspsych-SAM_pictures-text">' + trial.questions[i] + '</p>');
+                $("#jspsych-SAM_pictures-" + i).append('<p class="jspsych-SAM_pictures-text SAM_pictures">' + trial.questions[i] + '</p>');
 
                 // create slider
                 $("#jspsych-SAM_pictures-" + i).append($('<div>', {
@@ -83,34 +62,34 @@
                 });
 
                 // show tick marks
-		
-                $("#jspsych-SAM_pictures-" + i).append($('<div>', {
-                    "id": 'jspsych-SAM_pictures-sliderticks' + i,
-                    "class": 'jspsych-SAM_pictures-sliderticks',
-                    "css": {
-                        "position": 'relative'
+                if (trial.show_ticks) {
+                    $("#jspsych-SAM_pictures-" + i).append($('<div>', {
+                        "id": 'jspsych-SAM_pictures-sliderticks' + i,
+                        "class": 'jspsych-SAM_pictures-sliderticks jspsych-SAM_pictures',
+                        "css": {
+                            "position": 'relative'
+                        }
+                    }));
+                    for (var j = 1; j < trial.intervals[i] - 1; j++) {
+                        $('#jspsych-SAM_pictures-slider-' + i).append('<div class="jspsych-SAM_pictures-slidertickmark"></div>');
                     }
-                }));
-                for (var j = 1; j < trial.intervals[i] - 1; j++) {
-                    $('#jspsych-SAM_pictures-slider-' + i).append('<div class="jspsych-SAM_pictures-slidertickmark"></div>');
-                }
-		
-                $('#jspsych-SAM_pictures-slider-' + i + ' .jspsych-SAM_pictures-slidertickmark').each(function(index) {
-                    var left = (index + 1) * (100 / (trial.intervals[i] - 1));
-                    $(this).css({
-                        'position': 'absolute',
-                        'left': left + '%',
-                        'width': '1px',
-                        'height': '100%',
-                        'background-color': '#222222'
+
+                    $('#jspsych-SAM_pictures-slider-' + i + ' .jspsych-SAM_pictures-slidertickmark').each(function(index) {
+                        var left = (index + 1) * (100 / (trial.intervals[i] - 1));
+                        $(this).css({
+                            'position': 'absolute',
+                            'left': left + '%',
+                            'width': '1px',
+                            'height': '100%',
+                            'background-color': '#222222'
+                        });
                     });
-                });
-		
+                }
 
                 // create labels for slider
                 $("#jspsych-SAM_pictures-" + i).append($('<ul>', {
                     "id": "jspsych-SAM_pictures-sliderlabels-" + i,
-                    "class": 'jspsych-SAM_pictures-sliderlabels',
+                    "class": 'jspsych-SAM_pictures-sliderlabels SAM_pictures',
                     "css": {
                         "width": "100%",
                         "margin": "10px 0px 0px 0px",
@@ -143,8 +122,6 @@
                 });
             }
 
-	    
-
             // add submit button
             display_element.append($('<button>', {
                 'id': 'jspsych-SAM_pictures-next',
@@ -170,8 +147,7 @@
                 block.writeData($.extend({}, {
                     "trial_type": "SAM_pictures",
                     "trial_index": block.trial_idx,
-		    "sdf": trial.data.stimulus_type,
-                    "RT": response_time
+                    "rt": response_time
                 }, question_data, trial.data));
 
                 display_element.html('');

@@ -8,14 +8,15 @@
         <!-- Load the jspsych library and plugins -->
         <script src="scripts/jspsych.js"></script>
         <script src="scripts/plugins/jspsych-text.js"></script>
+        <script src="scripts/plugins/jspsych-single-stim.js"></script>
         <!-- Load the stylesheet -->
         <link href="css/jspsych.css" type="text/css" rel="stylesheet"></link>
         <!-- likert plugin requires the jQuery UI library and stylesheet -->
         <!-- these can be loaded from google's servers with the following links -->
-        <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
         <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/black-tie/jquery-ui.min.css" rel="stylesheet" type="text/css"></link>
         <!-- jsPsych -->
-        <script src="scripts/plugins/jspsych-SAM_pictures.js"></script>
+        <script src="scripts/plugins/jspsych-survey-likert.js"></script>
     </head>
     
     <body>
@@ -38,19 +39,19 @@
 
         // Generating Random Order for Stimuli
 		
-	var stimuli = [
-		{image: "img/ChrBrad_0.0_4.5_4.5.png", data: { stimulus_type: "0.0_4.5_4.5"}},
-		{image: "img/ChrBrad_1.3_1.3_4.5.png", data: { stimulus_type: "1.3_1.3_4.5"}},
-		{image: "img/ChrBrad_1.3_7.6_4.5.png", data: { stimulus_type: "1.3_7.6_4.5"}},
-		{image: "img/ChrBrad_4.4_0.0_4.5.png", data: { stimulus_type: "4.4_0.0_4.5"}},
-		{image: "img/ChrBrad_4.5_9.0_4.5.png", data: { stimulus_type: "4.5_9.0_4.5"}},
-		{image: "img/ChrBrad_7.6_1.3_4.5.png", data: { stimulus_type: "7.6_1.3_4.5"}},
-		{image: "img/ChrBrad_7.6_7.6_4.5.png", data: { stimulus_type: "7.6_7.6_4.5"}},
-		{image: "img/ChrBrad_9.0_4.5_4.5.png", data: { stimulus_type: "9.0_4.5_4.5"}},
-	];
+		var stimuli = [
+			{image: "img/ChrBrad_0.0_4.5_4.5.png", data: { stimulus_type: "0.0_4.5_4.5"}},
+			{image: "img/ChrBrad_1.3_1.3_4.5.png", data: { stimulus_type: "1.3_1.3_4.5"}},
+			{image: "img/ChrBrad_1.3_7.6_4.5.png", data: { stimulus_type: "1.3_7.6_4.5"}},
+			{image: "img/ChrBrad_4.4_0.0_4.5.png", data: { stimulus_type: "4.4_0.0_4.5"}},
+			{image: "img/ChrBrad_4.5_9.0_4.5.png", data: { stimulus_type: "4.5_9.0_4.5"}},
+			{image: "img/ChrBrad_7.6_1.3_4.5.png", data: { stimulus_type: "7.6_1.3_4.5"}},
+			{image: "img/ChrBrad_7.6_7.6_4.5.png", data: { stimulus_type: "7.6_7.6_4.5"}},
+			{image: "img/ChrBrad_9.0_4.5_4.5.png", data: { stimulus_type: "9.0_4.5_4.5"}},
+		];
 
         
-	var trial_info = jsPsych.randomization.repeat(stimuli, n_trials_per_stimulus, true);
+		var trial_info = jsPsych.randomization.repeat(stimuli, n_trials_per_stimulus, true);
         
         // Define experiment blocks
         var instruction_block = {
@@ -59,11 +60,30 @@
                 timing_post_trial: 1500
             };
         
+        var test_block = {
+                type: "single-stim",
+                stimuli: trial_info.image,
+                choices: [37, 39],
+                data: trial_info.data,
+				timing_post_trial: function() {
+					return Math.floor(Math.random()*1000)+1000;
+				}
+            };
+
+
+        // defining groups of questions that will go together.
+        var page_1_questions = ["Valence", "Arousal"];
+
+        // definiting two different response scales that can be used.
+        var scale_1 = ["Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"];
 
         var likert_block = {
-	    type: "SAM_pictures",
-            stimuli: trial_info.image,
+            type: "survey-likert",
+            questions: [page_1_questions],
+            labels: [[scale_1, scale_1]], // need one scale for every question on a page
+            intervals: [[7,7]] // note the the intervals and labels don't necessarily need to match.
         };
+
 
             
         var debrief_block = {
@@ -73,27 +93,14 @@
             
 	jsPsych.preloadImages(trial_info.image, function() { start_experiment(); });
 	
-	function saveData(filename, filedata){
-	   $.ajax({
-	      type:'post',
-	      cache: false,
-	      url: 'scripts/save_data.php', // this is the path to the above PHP script
-	      data: {filename: filename, filedata: filedata}
-	   });
-	}
 	function start_experiment() {
 		jsPsych.init({
 			display_element: $('#jspsych_target'),
-//			experiment_structure: [instruction_block, likert_block, debrief_block],
-			experiment_structure: [likert_block],
-//			on_finish: function(data){ jsPsych.dataAPI.displayData(); }
-		        on_finish: function(data){ saveData("filename.csv", jsPsych.dataAsCSV()) }
-//		        on_finish: function(data){ $('#jspsych_target').append($('<pre>', { html:jsPsych.dataAsCSV() })) } 
-
+			experiment_structure: [instruction_block, test_block, debrief_block],
+			on_finish: function(data) {
+				jsPsych.dataAPI.displayData();
+			}
 		});
-
-
-
 	}
     </script>
 </html>
